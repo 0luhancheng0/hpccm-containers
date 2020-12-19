@@ -1,0 +1,16 @@
+[build-system]
+requires = ["flit_core >=2,<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.flit.metadata]
+module = "hpccm_containers"
+author = "Luhan Cheng"
+author-email = "luhan.cheng@monash.edu"
+classifiers = ["License :: OSI Approved :: MIT License"]
+
+requires = [
+    "fire",
+    "pathlib",
+    "hpccm",
+    "wget"
+]
