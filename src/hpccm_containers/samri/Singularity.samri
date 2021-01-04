@@ -1,0 +1,49 @@
+BootStrap: shub
+From: Characterisation-Virtual-Laboratory/CharacterisationVL-Software:2004
+%post
+    . /.singularity.d/env/10-docker*.sh
+
+%labels
+    email luhan.cheng@monash.edu
+    maintainer Luhan Cheng
+
+%post
+    apt-get update -y
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        snapd
+    rm -rf /var/lib/apt/lists/*
+
+%post
+    cd /
+    snapd install blender
+
+# pip
+%post
+    apt-get update -y
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        python3-pip \
+        python3-setuptools \
+        python3-wheel
+    rm -rf /var/lib/apt/lists/*
+%post
+    cd /
+    pip3 --no-cache-dir install argh joblib matplotlib>=2.0.2 numpy>=1.13.3 pandas seaborn statsmodels nibabel nipy>=0.4.1 nipype>=1.0.0 pybids<=0.6.5 scikit-image scipy nilearn
+
+%post
+    cd /
+    python fslinstaller.py  -d /usr/local/fsl/6.0.4 -V 6.0.4
+
+# https://github.com/neurolabusc/Bru2Nii/releases/download/v1.0.20180303/Bru2_Linux.zip
+%post
+    cd /
+    mkdir -p /var/tmp && wget -q -nc --no-check-certificate -P /var/tmp https://github.com/neurolabusc/Bru2Nii/releases/download/v1.0.20180303/Bru2_Linux.zip
+    mkdir -p /var/tmp && unzip -d /var/tmp /var/tmp/Bru2_Linux.zip
+    cd /var/tmp/Bru2_Linux
+    mv Bru2 Bru2Nii /usr/local/bin
+    rm -rf /var/tmp/Bru2_Linux /var/tmp/Bru2_Linux.zip
+
+%post
+    cd /
+    cd /usr/local/
+    wget http://chymera.eu/distfiles/mouse-brain-atlases-0.5.3.tar.xz && tar -xf mouse-brain-atlases-0.5.3.tar.xz && rm mouse-brain-atlases-0.5.3.tar.xz
+    wget http://chymera.eu/distfiles/mouse-brain-atlasesHD-0.5.3.tar.xz && tar -xf mouse-brain-atlasesHD-0.5.3.tar.xz && rm mouse-brain-atlasesHD-0.5.3.tar.xz

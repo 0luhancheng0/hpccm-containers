@@ -80,14 +80,14 @@ From: Characterisation-Virtual-Laboratory/CharacterisationVL-Software:2004
     export C_INCLUDE_PATH=/usr/local/mashtree/include:$C_INCLUDE_PATH
     export LD_LIBRARY_PATH=/usr/local/mashtree/lib:$LD_LIBRARY_PATH
     export LIBRARY_PATH=/usr/local/mashtree/lib:$LIBRARY_PATH
-    export PATH=/usr/local/mashtree/bin:$PATH
+    export PATH=/usr/local/mashtree/bin/:$PATH
     export PERL5LIB=$PERL5LIB:/usr/local
 %post
     export CXX_INCLUDE_PATH=/usr/local/mashtree/include:$CXX_INCLUDE_PATH
     export C_INCLUDE_PATH=/usr/local/mashtree/include:$C_INCLUDE_PATH
     export LD_LIBRARY_PATH=/usr/local/mashtree/lib:$LD_LIBRARY_PATH
     export LIBRARY_PATH=/usr/local/mashtree/lib:$LIBRARY_PATH
-    export PATH=/usr/local/mashtree/bin:$PATH
+    export PATH=/usr/local/mashtree/bin/:$PATH
     export PERL5LIB=$PERL5LIB:/usr/local
 
 %post

@@ -1,5 +1,6 @@
 import hpccm
 from pathlib import Path
+import wget
 from hpccm import building_blocks, primitives
 from fire import Fire
 def build(format='singularity', baseimage='ubuntu:18.04', qiime2_version='2020.11', python_version='py36'):

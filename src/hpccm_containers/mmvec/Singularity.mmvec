@@ -14,8 +14,8 @@ From: ubuntu:18.04
     qiime2-2020.11-py36-linux-conda.yml /var/tmp/qiime2-2020.11-py36-linux-conda.yml
 %post
     cd /
-    mkdir -p /var/tmp && wget -q -nc --no-check-certificate -P /var/tmp http://repo.anaconda.com/miniconda/Miniconda3-py38_4.9.2-Linux-x86_64.sh
-    bash /var/tmp/Miniconda3-py38_4.9.2-Linux-x86_64.sh -b -p /usr/local/anaconda
+    mkdir -p /var/tmp && wget -q -nc --no-check-certificate -P /var/tmp http://repo.anaconda.com/miniconda/Miniconda3-py38_4.8.3-Linux-x86_64.sh
+    bash /var/tmp/Miniconda3-py38_4.8.3-Linux-x86_64.sh -b -p /usr/local/anaconda
     /usr/local/anaconda/bin/conda init
     ln -s /usr/local/anaconda/etc/profile.d/conda.sh /etc/profile.d/conda.sh
     . /usr/local/anaconda/etc/profile.d/conda.sh
@@ -25,7 +25,7 @@ From: ubuntu:18.04
     rm -rf /var/tmp/qiime2-2020.11-py36-linux-conda.yml
     conda install -y mmvec
     /usr/local/anaconda/bin/conda clean -afy
-    rm -rf /var/tmp/Miniconda3-py38_4.9.2-Linux-x86_64.sh
+    rm -rf /var/tmp/Miniconda3-py38_4.8.3-Linux-x86_64.sh
 
 %post
     cd /
