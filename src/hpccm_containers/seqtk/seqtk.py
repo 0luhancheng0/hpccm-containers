@@ -1,7 +1,7 @@
 import hpccm
 import wget
 from fire import Fire
-from hpccm.building_blocks import boost, generic_autotools, generic_build,
+from hpccm.building_blocks import boost, generic_autotools, generic_build
 from hpccm.primitives import environment, label, shell
 from hpccm_containers.utils import add_binary, from_prefix, stage_template
 
