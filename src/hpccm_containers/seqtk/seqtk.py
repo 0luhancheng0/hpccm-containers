@@ -1,9 +1,9 @@
-import wget
 import hpccm
-from hpccm.building_blocks import packages, boost, generic_autotools, generic_build, pip
-from hpccm.primitives import baseimage, shell, label, environment
-from hpccm_containers.utils import from_prefix, stage_template, add_binary
+import wget
 from fire import Fire
+from hpccm.building_blocks import boost, generic_autotools, generic_build,
+from hpccm.primitives import environment, label, shell
+from hpccm_containers.utils import add_binary, from_prefix, stage_template
 
 
 def build(version='1.3'):

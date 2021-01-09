@@ -1,8 +1,8 @@
 import wget
 import hpccm
-from hpccm.building_blocks import packages, boost, generic_autotools, generic_build, pip
-from hpccm.primitives import baseimage, shell, label, environment
-from hpccm_containers.utils import from_prefix, stage_template
+from hpccm.building_blocks import packages, generic_build
+from hpccm.primitives import environment
+from hpccm_containers.utils import stage_template
 from fire import Fire
 
 
