@@ -1,0 +1,76 @@
+BootStrap: docker
+From: nvcr.io/nvidia/cuda:11.0-devel-ubuntu20.04
+%post
+    . /.singularity.d/env/10-docker*.sh
+
+%labels
+    email luhan.cheng@monash.edu
+    maintainer Luhan Cheng
+
+%post
+    apt-get update -y
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        gfortran \
+        git \
+        libmpich-dev \
+        mpich
+    rm -rf /var/lib/apt/lists/*
+
+%post
+    cd /
+    git clone --depth 1 --branch v8.1.0 https://github.com/cp2k/cp2k.git /cp2k
+
+%post
+    cd /
+    /cp2k/tools/toolchain/install_requirements_ubuntu.sh
+
+%environment
+    export CUDA_PATH=/usr/local/cuda
+    export LD_LIBRARY_PATH=/usr/local/cuda/:${LD_LIBRARY_PATH}
+    export MKLROOT=/opt/intel/compilers_and_libraries/linux/mkl
+%post
+    export CUDA_PATH=/usr/local/cuda
+    export LD_LIBRARY_PATH=/usr/local/cuda/:${LD_LIBRARY_PATH}
+    export MKLROOT=/opt/intel/compilers_and_libraries/linux/mkl
+
+# MKL version 2020.0-088
+%post
+    apt-get update -y
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        apt-transport-https \
+        ca-certificates \
+        gnupg \
+        wget
+    rm -rf /var/lib/apt/lists/*
+%post
+    wget -qO - https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2019.PUB | apt-key add -
+    echo "deb https://apt.repos.intel.com/mkl all main" >> /etc/apt/sources.list.d/hpccm.list
+    apt-get update -y
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        intel-mkl-64bit-2020.0-088
+    rm -rf /var/lib/apt/lists/*
+%post
+    cd /
+    echo "source /opt/intel/mkl/bin/mklvars.sh intel64" >> /etc/bash.bashrc
+
+%post
+    cd /
+    mkdir -p /opt/cp2k-toolchain
+    cd /opt/cp2k-toolchain
+
+%post
+    cd /
+    cd /opt/cp2k-toolchain
+    mkdir scripts && mv /cp2k/tools/toolchain/scripts/* ./scripts/
+    mv /cp2k/tools/toolchain/install_cp2k_toolchain.sh .
+    rm -rf /cp2k
+
+%post
+    cd /
+    cd /opt/cp2k-toolchain
+    ./install_cp2k_toolchain.sh --mpi-mode=mpich --math-mode=mkl --with-reflapack=no --with-scalapack=no --with-elpa=no --gpu-ver=P100
+    rm -rf ./build
+
+%runscript
+    cd /opt/cp2k-toolchain
+    exec /bin/bash "$@"

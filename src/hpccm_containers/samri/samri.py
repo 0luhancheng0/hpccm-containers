@@ -8,9 +8,9 @@ from fire import Fire
 import os
 
 
-def build(image="Characterisation-Virtual-Laboratory/CharacterisationVL-Software:2004", version='0.5', fsl_version='6.0.4', bru2nii_version='v1.0.20180303'):
+def build(version='0.5', fsl_version='6.0.4', bru2nii_version='v1.0.20180303'):
 
-    stage0 = stage_template(cpu=True)
+    stage0 = stage_template()
     stage0 += packages(apt=['snapd'])
     stage0 += shell(commands=['snapd install blender'])
     stage0 += pip(packages=['argh', 'joblib', 'matplotlib>=2.0.2', 'numpy>=1.13.3', 'pandas', 'seaborn', 'statsmodels', 'nibabel', 'nipy>=0.4.1', 'nipype>=1.0.0', 'pybids<=0.6.5', 'scikit-image', 'scipy', 'nilearn'], pip='pip3')

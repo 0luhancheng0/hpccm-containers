@@ -22,9 +22,9 @@ def add_binary(binpath):
     return prepend_path(binpath, 'PATH')
 
 
-def stage_template(cpu=True):
-    image = "Characterisation-Virtual-Laboratory/CharacterisationVL-Software:2004" if cpu else 'Characterisation-Virtual-Laboratory/CharacterisationVL-Software:2004-cuda11.0'
-    stage0 = hpccm.Stage()
+def stage_template(gpu=False, stage_name='stage0'):
+    image = "Characterisation-Virtual-Laboratory/CharacterisationVL-Software:2004" if not gpu else 'Characterisation-Virtual-Laboratory/CharacterisationVL-Software:2004-cuda11.0'
+    stage0 = hpccm.Stage(name=stage_name)
     hpccm.config.set_container_format("singularity")
     stage0 += baseimage(image=image, _bootstrap='shub', _distro='ubuntu20')
     stage0 += label(metadata={'maintainer': 'Luhan Cheng', 'email': 'luhan.cheng@monash.edu'})

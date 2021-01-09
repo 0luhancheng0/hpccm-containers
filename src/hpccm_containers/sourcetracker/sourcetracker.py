@@ -6,8 +6,8 @@ from hpccm_containers.utils import from_prefix, stage_template
 from fire import Fire
 
 
-def build(image="Characterisation-Virtual-Laboratory/CharacterisationVL-Software:2004", version='1.0.1'):
-    stage0 = stage_template(cpu=True)
+def build(version='1.0.1'):
+    stage0 = stage_template()
     stage0 += packages(apt=['r-base'])
     stage0 += generic_build(
         repository='https://github.com/danknights/sourcetracker.git',
