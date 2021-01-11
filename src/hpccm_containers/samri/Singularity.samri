@@ -17,16 +17,16 @@ From: Characterisation-Virtual-Laboratory/CharacterisationVL-Software:2004
 %post
     apt-get update -y
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-        g++-9.1.0 \
-        gcc-9.1.0 \
-        gfortran-9.1.0
+        g++-8.1.0 \
+        gcc-8.1.0 \
+        gfortran-8.1.0
     rm -rf /var/lib/apt/lists/*
 %post
     cd /
-    update-alternatives --install /usr/bin/g++ g++ $(which g++-9.1.0) 30
-    update-alternatives --install /usr/bin/gcc gcc $(which gcc-9.1.0) 30
-    update-alternatives --install /usr/bin/gcov gcov $(which gcov-9.1.0) 30
-    update-alternatives --install /usr/bin/gfortran gfortran $(which gfortran-9.1.0) 30
+    update-alternatives --install /usr/bin/g++ g++ $(which g++-8.1.0) 30
+    update-alternatives --install /usr/bin/gcc gcc $(which gcc-8.1.0) 30
+    update-alternatives --install /usr/bin/gcov gcov $(which gcov-8.1.0) 30
+    update-alternatives --install /usr/bin/gfortran gfortran $(which gfortran-8.1.0) 30
 
 %post
     cd /

@@ -8,7 +8,7 @@ from hpccm import Stage, config
 from fire import Fire
 import os
 
-def build(container_format='singularity', version='0.5', fsl_version='6.0.4', bru2nii_version='v1.0.20180303', gnu_version='9.1.0', ants_version='v2.3.5'):
+def build(container_format='singularity', version='0.5', fsl_version='6.0.4', bru2nii_version='v1.0.20180303', gnu_version='8.1.0', ants_version='v2.3.5'):
     config.set_container_format(container_format)
     stage0 = Stage(name='stage0')
     stage0 += baseimage(image='Characterisation-Virtual-Laboratory/CharacterisationVL-Software:2004', _bootstrap='shub',  _distro='ubuntu20')
