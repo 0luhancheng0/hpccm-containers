@@ -13,9 +13,26 @@ From: Characterisation-Virtual-Laboratory/CharacterisationVL-Software:2004
         snapd
     rm -rf /var/lib/apt/lists/*
 
+# GNU compiler
+%post
+    apt-get update -y
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        g++-9.1.0 \
+        gcc-9.1.0 \
+        gfortran-9.1.0
+    rm -rf /var/lib/apt/lists/*
+%post
+    cd /
+    update-alternatives --install /usr/bin/g++ g++ $(which g++-9.1.0) 30
+    update-alternatives --install /usr/bin/gcc gcc $(which gcc-9.1.0) 30
+    update-alternatives --install /usr/bin/gcov gcov $(which gcov-9.1.0) 30
+    update-alternatives --install /usr/bin/gfortran gfortran $(which gfortran-9.1.0) 30
+
 %post
     cd /
     snapd install blender
+
+# https://github.com/IBT-FMI/SAMRI
 
 # pip
 %post
@@ -27,11 +44,11 @@ From: Characterisation-Virtual-Laboratory/CharacterisationVL-Software:2004
     rm -rf /var/lib/apt/lists/*
 %post
     cd /
-    pip3 --no-cache-dir install argh joblib matplotlib>=2.0.2 numpy>=1.13.3 pandas seaborn statsmodels nibabel nipy>=0.4.1 nipype>=1.0.0 pybids<=0.6.5 scikit-image scipy nilearn
+    pip3 --no-cache-dir install argh joblib matplotlib>=2.0.2 numpy>=1.13.3 pandas seaborn statsmodels nibabel nipy>=0.4.1 nipype>=1.0.0 pybids<=0.6.5 scikit-image scipy nilearn pytest
 
 %post
     cd /
-    python fslinstaller.py  -d /usr/local/fsl/6.0.4 -V 6.0.4
+    python fslinstaller.py -d /usr/local/fsl/6.0.4 -V 6.0.4
 
 # https://github.com/neurolabusc/Bru2Nii/releases/download/v1.0.20180303/Bru2_Linux.zip
 %post
@@ -39,7 +56,7 @@ From: Characterisation-Virtual-Laboratory/CharacterisationVL-Software:2004
     mkdir -p /var/tmp && wget -q -nc --no-check-certificate -P /var/tmp https://github.com/neurolabusc/Bru2Nii/releases/download/v1.0.20180303/Bru2_Linux.zip
     mkdir -p /var/tmp && unzip -d /var/tmp /var/tmp/Bru2_Linux.zip
     cd /var/tmp/Bru2_Linux
-    mv Bru2 Bru2Nii /usr/local/bin
+    mv Bru2 Bru2Nii /usr/local/bin/
     rm -rf /var/tmp/Bru2_Linux /var/tmp/Bru2_Linux.zip
 
 %post
@@ -47,3 +64,38 @@ From: Characterisation-Virtual-Laboratory/CharacterisationVL-Software:2004
     cd /usr/local/
     wget http://chymera.eu/distfiles/mouse-brain-atlases-0.5.3.tar.xz && tar -xf mouse-brain-atlases-0.5.3.tar.xz && rm mouse-brain-atlases-0.5.3.tar.xz
     wget http://chymera.eu/distfiles/mouse-brain-atlasesHD-0.5.3.tar.xz && tar -xf mouse-brain-atlasesHD-0.5.3.tar.xz && rm mouse-brain-atlasesHD-0.5.3.tar.xz
+
+# https://github.com/ANTsX/ANTs.git
+%post
+    cd /
+    mkdir -p /var/tmp && cd /var/tmp && git clone --depth=1 --branch v2.3.5 https://github.com/ANTsX/ANTs.git ANTs && cd -
+    mkdir -p /var/tmp/ANTs/build && cd /var/tmp/ANTs/build && CC=gcc CXX=g++ F77=gfortran F90=gfortran FC=gfortran cmake -DCMAKE_INSTALL_PREFIX=/usr/local/ants /var/tmp/ANTs
+    cmake --build /var/tmp/ANTs/build --target all -- -j$(nproc)
+    cmake --build /var/tmp/ANTs/build --target install -- -j$(nproc)
+    rm -rf /var/tmp/ANTs
+
+%post
+    cd /
+    mkdir -p /usr/local/afni/
+    wget https://afni.nimh.nih.gov/pub/dist/tgz/linux_ubuntu_16_64.tgz
+    tar -xf linux_ubuntu_16_64.tgz -C /usr/local/afni/
+    rm linux_ubuntu_16_64.tgz
+
+# https://github.com/IBT-FMI/SAMRI.git
+%post
+    cd /
+    mkdir -p /var/tmp && cd /var/tmp && git clone --depth=1 --branch 0.5 https://github.com/IBT-FMI/SAMRI.git SAMRI && cd -
+    cd /var/tmp/SAMRI
+    echo "export PATH=\$HOME/.local/bin/:\$PATH" >> ~/.bashrc
+    source ~/.bashrc
+    python setup.py install
+    rm -rf /var/tmp/SAMRI
+
+%environment
+    export AFNI_ROOT=/usr/local/afni/linux_ubuntu_16_64
+    export ANTSPATH=/usr/local/ants/bin
+    export PATH=/usr/local/ants/bin:/usr/local/afni/linux_ubuntu_16_64:$PATH
+%post
+    export AFNI_ROOT=/usr/local/afni/linux_ubuntu_16_64
+    export ANTSPATH=/usr/local/ants/bin
+    export PATH=/usr/local/ants/bin:/usr/local/afni/linux_ubuntu_16_64:$PATH

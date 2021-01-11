@@ -36,7 +36,7 @@ def build(container_format='singularity', os='ubuntu20.04', cuda_version='11.0',
         'rm -rf ./build'
     ])
     stage0 += runscript(commands=[
-        'cd /opt/cp2k-toolchain',
+        # 'cd /opt/cp2k-toolchain',
         '/bin/bash "$@"'
     ])
 
