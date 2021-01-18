@@ -7,6 +7,9 @@ From: nvcr.io/nvidia/cuda:11.0-devel-ubuntu20.04
     email luhan.cheng@monash.edu
     maintainer Luhan Cheng
 
+# Toolchain installation translated from https://github.com/cp2k/cp2k/
+# blob/master/tools/toolchain/Dockerfile.cuda_mkl
+
 %post
     apt-get update -y
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -19,6 +22,8 @@ From: nvcr.io/nvidia/cuda:11.0-devel-ubuntu20.04
 %post
     cd /
     git clone --depth 1 --branch v8.1.0 https://github.com/cp2k/cp2k.git /cp2k
+    cd /cp2k
+    git submodule update --init --recursive
 
 %post
     cd /
@@ -26,12 +31,20 @@ From: nvcr.io/nvidia/cuda:11.0-devel-ubuntu20.04
 
 %environment
     export CUDA_PATH=/usr/local/cuda
-    export LD_LIBRARY_PATH=/usr/local/cuda/:${LD_LIBRARY_PATH}
+    export CXX_INCLUDE_PATH=/usr/local/cuda/include:$CXX_INCLUDE_PATH
+    export C_INCLUDE_PATH=/usr/local/cuda/include:$C_INCLUDE_PATH
+    export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+    export LIBRARY_PATH=/usr/local/cuda/lib64:$LIBRARY_PATH
     export MKLROOT=/opt/intel/compilers_and_libraries/linux/mkl
+    export PATH=/usr/local/cuda/bin/:$PATH
 %post
     export CUDA_PATH=/usr/local/cuda
-    export LD_LIBRARY_PATH=/usr/local/cuda/:${LD_LIBRARY_PATH}
+    export CXX_INCLUDE_PATH=/usr/local/cuda/include:$CXX_INCLUDE_PATH
+    export C_INCLUDE_PATH=/usr/local/cuda/include:$C_INCLUDE_PATH
+    export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+    export LIBRARY_PATH=/usr/local/cuda/lib64:$LIBRARY_PATH
     export MKLROOT=/opt/intel/compilers_and_libraries/linux/mkl
+    export PATH=/usr/local/cuda/bin/:$PATH
 
 # MKL version 2020.0-088
 %post
@@ -61,16 +74,24 @@ From: nvcr.io/nvidia/cuda:11.0-devel-ubuntu20.04
 %post
     cd /
     cd /opt/cp2k-toolchain
-    mkdir scripts && mv /cp2k/tools/toolchain/scripts/* ./scripts/
-    mv /cp2k/tools/toolchain/install_cp2k_toolchain.sh .
-    rm -rf /cp2k
+    mkdir scripts && cp -r /cp2k/tools/toolchain/scripts/* ./scripts/
+    cp /cp2k/tools/toolchain/install_cp2k_toolchain.sh .
 
 %post
     cd /
     cd /opt/cp2k-toolchain
-    ./install_cp2k_toolchain.sh --mpi-mode=mpich --math-mode=mkl --with-reflapack=no --with-scalapack=no --with-elpa=no --gpu-ver=P100
+    ./install_cp2k_toolchain.sh --mpi-mode=mpich --math-mode=mkl --with-reflapack=no --with-scalapack=no --with-elpa=no --gpu-ver=V100
     rm -rf ./build
 
-%runscript
-    cd /opt/cp2k-toolchain
-    exec /bin/bash "$@"
+%post
+    cd /
+    cp /opt/cp2k-toolchain/install/arch/* /cp2k/arch/
+    cd /cp2k
+    sed  's/source /. /g' /opt/cp2k-toolchain/install/setup > /opt/cp2k-toolchain/install/setup 
+    . /opt/cp2k-toolchain/install/setup
+    make ARCH=local VERSION="psmp" | tee /var/tmp/log.txt
+
+%environment
+    export PATH=/cp2k/exe/local:$PATH
+%post
+    export PATH=/cp2k/exe/local:$PATH

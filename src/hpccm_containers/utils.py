@@ -7,10 +7,12 @@ def from_prefix(prefix):
 
     return {
         **add_binary(f'{prefix}/bin/'),
-        **prepend_path(f'{prefix}/lib', 'LIBRARY_PATH'),
         **prepend_path(f'{prefix}/include', 'C_INCLUDE_PATH'),
         **prepend_path(f'{prefix}/include', 'CXX_INCLUDE_PATH'),
+        **prepend_path(f'{prefix}/lib', 'LIBRARY_PATH'),
         **prepend_path(f'{prefix}/lib', 'LD_LIBRARY_PATH'),
+        **prepend_path(f'{prefix}/lib64', 'LIBRARY_PATH'),
+        **prepend_path(f'{prefix}/lib64', 'LD_LIBRARY_PATH'),
     }
 
 
