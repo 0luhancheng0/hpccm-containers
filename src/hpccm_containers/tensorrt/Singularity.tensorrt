@@ -45,17 +45,17 @@ From: nvcr.io/nvidia/cuda:11.0-devel-ubuntu20.04
     rm -rf /var/tmp/pycuda
 
 %environment
-    export CXX_INCLUDE_PATH=/usr/local/pycuda/include:$CXX_INCLUDE_PATH
-    export C_INCLUDE_PATH=/usr/local/pycuda/include:$C_INCLUDE_PATH
+    export CXX_INCLUDE_PATH=/usr/local/pycuda/lib:$CXX_INCLUDE_PATH
+    export C_INCLUDE_PATH=/usr/local/pycuda/lib:$C_INCLUDE_PATH
     export LD_LIBRARY_PATH=/usr/local/pycuda/lib64:$LD_LIBRARY_PATH
     export LIBRARY_PATH=/usr/local/pycuda/lib64:$LIBRARY_PATH
-    export PATH=/usr/local/pycuda/bin/:$PATH
+    export PATH=/usr/local/pycuda/bin:$PATH
 %post
-    export CXX_INCLUDE_PATH=/usr/local/pycuda/include:$CXX_INCLUDE_PATH
-    export C_INCLUDE_PATH=/usr/local/pycuda/include:$C_INCLUDE_PATH
+    export CXX_INCLUDE_PATH=/usr/local/pycuda/lib:$CXX_INCLUDE_PATH
+    export C_INCLUDE_PATH=/usr/local/pycuda/lib:$C_INCLUDE_PATH
     export LD_LIBRARY_PATH=/usr/local/pycuda/lib64:$LD_LIBRARY_PATH
     export LIBRARY_PATH=/usr/local/pycuda/lib64:$LIBRARY_PATH
-    export PATH=/usr/local/pycuda/bin/:$PATH
+    export PATH=/usr/local/pycuda/bin:$PATH
 
 %files
     TensorRT-7.2.1.6.Ubuntu-18.04.x86_64-gnu.cuda-11.0.cudnn8.0.tar.gz /TensorRT-7.2.1.6.Ubuntu-18.04.x86_64-gnu.cuda-11.0.cudnn8.0.tar.gz
@@ -67,13 +67,17 @@ From: nvcr.io/nvidia/cuda:11.0-devel-ubuntu20.04
     rm -rf /TensorRT-7.2.1.6.Ubuntu-18.04.x86_64-gnu.cuda-11.0.cudnn8.0.tar.gz
 
 %environment
-    export C_INCLUDE_PATH=$C_INCLUDE_PATH:/usr/local/tensorrt/include/
-    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/tensorrt/lib/
-    export PATH=$PATH:/usr/local/tensorrt/bin/
+    export CXX_INCLUDE_PATH=/usr/local/anaconda/lib:$CXX_INCLUDE_PATH
+    export C_INCLUDE_PATH=/usr/local/anaconda/lib:$C_INCLUDE_PATH
+    export LD_LIBRARY_PATH=/usr/local/anaconda/lib64:$LD_LIBRARY_PATH
+    export LIBRARY_PATH=/usr/local/anaconda/lib64:$LIBRARY_PATH
+    export PATH=/usr/local/anaconda/bin:$PATH
 %post
-    export C_INCLUDE_PATH=$C_INCLUDE_PATH:/usr/local/tensorrt/include/
-    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/tensorrt/lib/
-    export PATH=$PATH:/usr/local/tensorrt/bin/
+    export CXX_INCLUDE_PATH=/usr/local/anaconda/lib:$CXX_INCLUDE_PATH
+    export C_INCLUDE_PATH=/usr/local/anaconda/lib:$C_INCLUDE_PATH
+    export LD_LIBRARY_PATH=/usr/local/anaconda/lib64:$LD_LIBRARY_PATH
+    export LIBRARY_PATH=/usr/local/anaconda/lib64:$LIBRARY_PATH
+    export PATH=/usr/local/anaconda/bin:$PATH
 
 # pip
 %post

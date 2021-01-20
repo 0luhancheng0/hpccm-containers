@@ -1,5 +1,6 @@
+from os import environ
 from hpccm import config, Stage
-from hpccm.building_blocks import gnu, openmpi, generic_build, mkl
+from hpccm.building_blocks import gnu, openmpi, generic_build, mkl, python
 from hpccm.building_blocks.packages import packages
 from hpccm.primitives import label, baseimage, workdir, shell, environment, runscript, comment
 from fire import Fire
@@ -38,7 +39,8 @@ def build(container_format='singularity', os='ubuntu20.04', cuda_version='11.0',
     stage0 += label(metadata={'maintainer': 'Luhan Cheng', 'email': 'luhan.cheng@monash.edu'})
     stage0 += comment('Toolchain installation translated from https://github.com/cp2k/cp2k/blob/master/tools/toolchain/Dockerfile.cuda_mkl')
 
-    stage0 += packages(apt=['git', 'gfortran', 'mpich', 'libmpich-dev'])
+    stage0 += packages(apt=['git', 'gfortran', 'mpich', 'libmpich-dev', 'software-properties-common', 'python-dev'])
+    stage0 += python()
     stage0 += shell(commands=[
         'git clone --depth 1 --branch v8.1.0 https://github.com/cp2k/cp2k.git /cp2k',
         'cd /cp2k',
@@ -76,6 +78,11 @@ def build(container_format='singularity', os='ubuntu20.04', cuda_version='11.0',
     stage0 += environment(variables={
         'PATH': '/cp2k/exe/local:$PATH'
     })
+    stage0 += shell(commands=[
+        'ln -s /usr/lib/x86_64-linux-gnu/libncursesw.so.6 /usr/lib/x86_64-linux-gnu/libncursesw.so.5',
+        'ln -s /usr/lib/x86_64-linux-gnu/libtinfo.so.6 /usr/lib/x86_64-linux-gnu/libtinfo.so.5'
+    ])
+    stage0 += environment(variables={'LD_LIBRARY_PATH': '/usr/lib/x86_64-linux-gnu/:$LD_LIBRARY_PATH'})
     return stage0
 
 

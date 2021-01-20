@@ -71,17 +71,17 @@ From: ubuntu:20.04
     patchelf --set-rpath /usr/local/python/lib /usr/local/python/bin/python3
 
 %environment
-    export CXX_INCLUDE_PATH=/usr/local/python/include:$CXX_INCLUDE_PATH
-    export C_INCLUDE_PATH=/usr/local/python/include:$C_INCLUDE_PATH
+    export CXX_INCLUDE_PATH=/usr/local/python/lib:$CXX_INCLUDE_PATH
+    export C_INCLUDE_PATH=/usr/local/python/lib:$C_INCLUDE_PATH
     export LD_LIBRARY_PATH=/usr/local/python/lib64:$LD_LIBRARY_PATH
     export LIBRARY_PATH=/usr/local/python/lib64:$LIBRARY_PATH
-    export PATH=/usr/local/python/bin/:$PATH
+    export PATH=/usr/local/python/bin:$PATH
 %post
-    export CXX_INCLUDE_PATH=/usr/local/python/include:$CXX_INCLUDE_PATH
-    export C_INCLUDE_PATH=/usr/local/python/include:$C_INCLUDE_PATH
+    export CXX_INCLUDE_PATH=/usr/local/python/lib:$CXX_INCLUDE_PATH
+    export C_INCLUDE_PATH=/usr/local/python/lib:$C_INCLUDE_PATH
     export LD_LIBRARY_PATH=/usr/local/python/lib64:$LD_LIBRARY_PATH
     export LIBRARY_PATH=/usr/local/python/lib64:$LIBRARY_PATH
-    export PATH=/usr/local/python/bin/:$PATH
+    export PATH=/usr/local/python/bin:$PATH
 
 # MKL version 2020.0-088
 %post
@@ -108,4 +108,5 @@ From: ubuntu:20.04
     . /opt/intel/mkl/bin/mklvars.sh intel64
 
 %runscript
-    exec /usr/local/python/bin/python3 "$@"
+    source /opt/intel/mkl/bin/mklvars.sh intel64
+    exec /usr/local/python/bin/python3

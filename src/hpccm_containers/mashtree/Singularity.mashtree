@@ -76,18 +76,18 @@ From: Characterisation-Virtual-Laboratory/CharacterisationVL-Software:2004
     rm -rf /var/tmp/Mash
 
 %environment
-    export CXX_INCLUDE_PATH=/usr/local/mashtree/include:$CXX_INCLUDE_PATH
-    export C_INCLUDE_PATH=/usr/local/mashtree/include:$C_INCLUDE_PATH
+    export CXX_INCLUDE_PATH=/usr/local/mashtree/lib:$CXX_INCLUDE_PATH
+    export C_INCLUDE_PATH=/usr/local/mashtree/lib:$C_INCLUDE_PATH
     export LD_LIBRARY_PATH=/usr/local/mashtree/lib64:$LD_LIBRARY_PATH
     export LIBRARY_PATH=/usr/local/mashtree/lib64:$LIBRARY_PATH
-    export PATH=/usr/local/mashtree/bin/:$PATH
+    export PATH=/usr/local/mashtree/bin:$PATH
     export PERL5LIB=$PERL5LIB:/usr/local
 %post
-    export CXX_INCLUDE_PATH=/usr/local/mashtree/include:$CXX_INCLUDE_PATH
-    export C_INCLUDE_PATH=/usr/local/mashtree/include:$C_INCLUDE_PATH
+    export CXX_INCLUDE_PATH=/usr/local/mashtree/lib:$CXX_INCLUDE_PATH
+    export C_INCLUDE_PATH=/usr/local/mashtree/lib:$C_INCLUDE_PATH
     export LD_LIBRARY_PATH=/usr/local/mashtree/lib64:$LD_LIBRARY_PATH
     export LIBRARY_PATH=/usr/local/mashtree/lib64:$LIBRARY_PATH
-    export PATH=/usr/local/mashtree/bin/:$PATH
+    export PATH=/usr/local/mashtree/bin:$PATH
     export PERL5LIB=$PERL5LIB:/usr/local
 
 %post

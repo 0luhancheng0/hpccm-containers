@@ -3,7 +3,7 @@ from hpccm.building_blocks import packages, boost, generic_autotools, generic_bu
 from hpccm.toolchain import toolchain
 import wget
 from hpccm.primitives import baseimage, shell, label, environment, comment
-from hpccm_containers.utils import from_prefix, stage_template
+from hpccm_containers.utils import from_prefix, CVL_ubuntu_stage
 from hpccm import Stage, config
 from fire import Fire
 import os

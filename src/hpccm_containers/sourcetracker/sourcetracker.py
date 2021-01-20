@@ -2,12 +2,12 @@ import wget
 import hpccm
 from hpccm.building_blocks import packages, generic_build
 from hpccm.primitives import environment
-from hpccm_containers.utils import stage_template
+from hpccm_containers.utils import CVL_ubuntu_stage
 from fire import Fire
 
 
 def build(version='1.0.1'):
-    stage0 = stage_template()
+    stage0 = CVL_ubuntu_stage()
     stage0 += packages(apt=['r-base'])
     stage0 += generic_build(
         repository='https://github.com/danknights/sourcetracker.git',

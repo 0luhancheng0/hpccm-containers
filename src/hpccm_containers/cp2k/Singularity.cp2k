@@ -16,7 +16,17 @@ From: nvcr.io/nvidia/cuda:11.0-devel-ubuntu20.04
         gfortran \
         git \
         libmpich-dev \
-        mpich
+        mpich \
+        python-dev \
+        software-properties-common
+    rm -rf /var/lib/apt/lists/*
+
+# Python
+%post
+    apt-get update -y
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        python \
+        python3
     rm -rf /var/lib/apt/lists/*
 
 %post
@@ -31,20 +41,20 @@ From: nvcr.io/nvidia/cuda:11.0-devel-ubuntu20.04
 
 %environment
     export CUDA_PATH=/usr/local/cuda
-    export CXX_INCLUDE_PATH=/usr/local/cuda/include:$CXX_INCLUDE_PATH
-    export C_INCLUDE_PATH=/usr/local/cuda/include:$C_INCLUDE_PATH
+    export CXX_INCLUDE_PATH=/usr/local/cuda/lib:$CXX_INCLUDE_PATH
+    export C_INCLUDE_PATH=/usr/local/cuda/lib:$C_INCLUDE_PATH
     export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
     export LIBRARY_PATH=/usr/local/cuda/lib64:$LIBRARY_PATH
     export MKLROOT=/opt/intel/compilers_and_libraries/linux/mkl
-    export PATH=/usr/local/cuda/bin/:$PATH
+    export PATH=/usr/local/cuda/bin:$PATH
 %post
     export CUDA_PATH=/usr/local/cuda
-    export CXX_INCLUDE_PATH=/usr/local/cuda/include:$CXX_INCLUDE_PATH
-    export C_INCLUDE_PATH=/usr/local/cuda/include:$C_INCLUDE_PATH
+    export CXX_INCLUDE_PATH=/usr/local/cuda/lib:$CXX_INCLUDE_PATH
+    export C_INCLUDE_PATH=/usr/local/cuda/lib:$C_INCLUDE_PATH
     export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
     export LIBRARY_PATH=/usr/local/cuda/lib64:$LIBRARY_PATH
     export MKLROOT=/opt/intel/compilers_and_libraries/linux/mkl
-    export PATH=/usr/local/cuda/bin/:$PATH
+    export PATH=/usr/local/cuda/bin:$PATH
 
 # MKL version 2020.0-088
 %post
@@ -95,3 +105,13 @@ From: nvcr.io/nvidia/cuda:11.0-devel-ubuntu20.04
     export PATH=/cp2k/exe/local:$PATH
 %post
     export PATH=/cp2k/exe/local:$PATH
+
+%post
+    cd /
+    ln -s /usr/lib/x86_64-linux-gnu/libncursesw.so.6 /usr/lib/x86_64-linux-gnu/libncursesw.so.5
+    ln -s /usr/lib/x86_64-linux-gnu/libtinfo.so.6 /usr/lib/x86_64-linux-gnu/libtinfo.so.5
+
+%environment
+    export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/:$LD_LIBRARY_PATH
+%post
+    export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/:$LD_LIBRARY_PATH
