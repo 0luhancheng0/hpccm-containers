@@ -43,9 +43,7 @@ def add_library_path(library_path):
 def from_prefix(prefix):
     return {
         **add_binary(f'{prefix}/bin'),
-        **add_include_path(f'{prefix}/include'),
-        **add_include_path(f'{prefix}/lib'),
-        **add_library_path(f'{prefix}/lib64')
+        **from_library(prefix)
     }
 
 
@@ -55,6 +53,13 @@ def prepend_path(path, variable):
 
 def add_binary(binpath):
     return prepend_path(binpath, 'PATH')
+
+def from_library(prefix):
+    return {
+        **add_include_path(f'{prefix}/include'),
+        **add_include_path(f'{prefix}/lib'),
+        **add_library_path(f'{prefix}/lib64')
+    }
 
 
 def CVL_ubuntu_stage(gpu=False, stage_name='stage0'):

@@ -4,6 +4,12 @@ From: nvidia/cuda:10.0-cudnn7-runtime-ubuntu16.04
     . /.singularity.d/env/10-docker*.sh
 
 %post
+    cd /
+    rm /bin/sh
+    ln -s /bin/bash /bin/sh
+    /bin/bash
+
+%post
     apt-get update -y
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         bc \
@@ -27,6 +33,8 @@ From: nvidia/cuda:10.0-cudnn7-runtime-ubuntu16.04
         wget \
         zip
     rm -rf /var/lib/apt/lists/*
+
+# https://github.com/Deep-MI/FastSurfer/blob/master/Docker/Dockerfile
 
 %post
     cd /
@@ -63,33 +71,44 @@ From: nvidia/cuda:10.0-cudnn7-runtime-ubuntu16.04
     rm -rf /var/tmp/FastSurfer
 
 %environment
+    export CXX_INCLUDE_PATH=/usr/local/cuda/lib:$CXX_INCLUDE_PATH
+    export C_INCLUDE_PATH=/usr/local/cuda/lib:$C_INCLUDE_PATH
     export FIX_VERTEX_AREA=
     export FREESURFER_HOME=/opt/freesurfer
     export FSFAST_HOME=/opt/freesurfer/fsfast
     export FSF_OUTPUT_FORMAT=nii.gz
     export FS_OVERRIDE=0
+    export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+    export LIBRARY_PATH=/usr/local/cuda/lib64:$LIBRARY_PATH
     export LOCAL_DIR=/opt/freesurfer/local
     export MNI_DIR=/opt/freesurfer/mni
     export MNI_PERL4LIB=/opt/freesurfer/mni/lib/perl5/5.8.5
     export OS=Linux
-    export PATH=/opt/freesurfer/bin:/opt/freesurfer/fsfast/bin:/opt/freesurfer/tktools:/opt/freesurfer/mni/bin:$PATH
+    export PATH=/usr/local/cuda/bin:$PATH
     export PERL5LIB=/opt/freesurfer/mni/lib/perl5/5.8.5
     export PYTHONNUMBUFFERED=0
     export SUBJECTS_DIR=/opt/freesurfer/subjects
 %post
+    export CXX_INCLUDE_PATH=/usr/local/cuda/lib:$CXX_INCLUDE_PATH
+    export C_INCLUDE_PATH=/usr/local/cuda/lib:$C_INCLUDE_PATH
     export FIX_VERTEX_AREA=
     export FREESURFER_HOME=/opt/freesurfer
     export FSFAST_HOME=/opt/freesurfer/fsfast
     export FSF_OUTPUT_FORMAT=nii.gz
     export FS_OVERRIDE=0
+    export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+    export LIBRARY_PATH=/usr/local/cuda/lib64:$LIBRARY_PATH
     export LOCAL_DIR=/opt/freesurfer/local
     export MNI_DIR=/opt/freesurfer/mni
     export MNI_PERL4LIB=/opt/freesurfer/mni/lib/perl5/5.8.5
     export OS=Linux
-    export PATH=/opt/freesurfer/bin:/opt/freesurfer/fsfast/bin:/opt/freesurfer/tktools:/opt/freesurfer/mni/bin:$PATH
+    export PATH=/usr/local/cuda/bin:$PATH
     export PERL5LIB=/opt/freesurfer/mni/lib/perl5/5.8.5
     export PYTHONNUMBUFFERED=0
     export SUBJECTS_DIR=/opt/freesurfer/subjects
 
 %runscript
-    exec /fastsurfer/run_fastsurfer.sh "$@"
+    cd /fastsurfer
+    source /usr/local/anaconda/etc/profile.d/conda.sh
+    source $FREESURFER_HOME/SetUpFreeSurfer.sh
+    exec $*

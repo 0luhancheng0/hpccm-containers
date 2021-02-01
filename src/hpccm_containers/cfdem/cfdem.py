@@ -1,20 +1,20 @@
 from os import environ
 from hpccm import config, Stage
-from hpccm.building_blocks import gnu, openmpi, packages, boost, python
+from hpccm.building_blocks import gnu, openmpi, packages, boost, python, generic_build
+from hpccm.building_blocks.generic_autotools import generic_autotools
 from hpccm.building_blocks.generic_cmake import generic_cmake
 from hpccm.primitives import label, baseimage, comment
 from fire import Fire
 from hpccm.primitives.environment import environment
 from hpccm.primitives.shell import shell
 from hpccm.toolchain import toolchain
-from hpccm_containers.utils import shell_with_log, add_flags, add_library_path, add_include_path
+from hpccm_containers.utils import from_library, from_prefix, shell_with_log, add_flags, add_library_path, add_include_path
 
 
-def build(container_format='singularity', openmpi_version='2.0.4', gnu_version='10',
-          cfdem_prefix='/usr/local/cfdem',
-          cfdem_version='3.8.0', liggghts_prefix='/usr/local/ligghts', lpp_prefix='/usr/local/lpp'):
+def build(container_format='singularity', openmpi_version='2.0.4', gnu_version='10', cfdem_prefix='/usr/local/cfdem',
+          cfdem_version='3.8.0', liggghts_prefix='/usr/local/ligghts', lpp_prefix='/usr/local/lpp', image='ubuntu:20.04',
+          mlton_version='on-20210117-release', gmp_version='6.2.1'):
 
-    image = 'ubuntu:20.04'
     config.set_container_format(container_format)
     stage0 = Stage(name='stage0')
     stage0 += baseimage(image=image, _bootstrap='docker')
@@ -24,11 +24,28 @@ def build(container_format='singularity', openmpi_version='2.0.4', gnu_version='
                             'bison', 'cmake', 'zlib1g-dev', 'gnuplot', 'libreadline-dev', 'libncurses-dev',
                             'libxt-dev', 'libscotch-dev', 'libptscotch-dev', 'libvtk6-dev', 'python-numpy',
                             'python-dev', 'qt5-default', 'git-core', 'libboost-system-dev', 'libboost-thread-dev',
-                            'libqt5x11extras5-dev', 'qttools5-dev', 'curl', 'libgl1-mesa-dev', 'libosmesa6-dev', 'libssh2-1'])
+                            'libqt5x11extras5-dev', 'qttools5-dev', 'curl', 'libgl1-mesa-dev', 'libosmesa6-dev', 'libssh2-1',
+                            'libtool'])
     compilers = gnu(version=gnu_version)
     stage0 += compilers
     openmpi_building_block = openmpi(version=openmpi_version, toolchain=compilers.toolchain, cuda=False)
     stage0 += openmpi_building_block
+
+    stage0 += generic_autotools(
+        url=f'https://gmplib.org/download/gmp/gmp-{gmp_version}.tar.xz',
+        prefix='/usr/local/gmp',
+        directory=f'gmp-{gmp_version}/',
+    )
+    stage0 += environment(variables=from_library('/usr/local/gmp'))
+
+
+    stage0 += generic_build(
+        repository='https://github.com/MLton/mlton.git',
+        branch=mlton_version,
+        build=['make -j'],
+        install=['make PREFIX=/usr/local/mlton']
+    )
+
 
     if cfdem_version == '3.8.0':
         OF_release = '5.x'
