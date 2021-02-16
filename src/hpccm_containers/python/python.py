@@ -18,7 +18,12 @@ def build(container_format='singularity', image='ubuntu:20.04', version='3.8.7',
     stage0 += baseimage(image=image, _bootstrap='docker')
     stage0 += label(metadata={'maintainer': 'Luhan Cheng', 'email': 'luhan.cheng@monash.edu'})
     stage0 += shell(commands=['rm /bin/sh && ln -s /bin/bash /bin/sh', '/bin/bash'])
-
+    stage0 += packages(apt=['wget', 'git', 'software-properties-common', 'build-essential', 'locales'])
+    stage0 += shell(commands=['locale-gen en_AU.UTF-8'])
+    stage0 += environment(variables={
+        'LC_ALL': 'en_AU.UTF-8',
+        'LANGUAGE': 'en_AU.UTF-8',
+    })
     filename = f'Python-{version}.tar.xz'
     url = f'https://www.python.org/ftp/python/{version}/{filename}'
     stage0 += packages(apt=['wget', 'xz-utils', 'build-essential', 'software-properties-common', 'libsqlite3-dev',
@@ -53,13 +58,14 @@ def build(container_format='singularity', image='ubuntu:20.04', version='3.8.7',
     ])
     stage0 += environment(variables=from_prefix('/usr/local/python'))
     stage0 += mkl(version=mkl_version, eula=True)
-    stage0 += shell(commands=['. /opt/intel/mkl/bin/mklvars.sh intel64'])
+    stage0 += shell(commands=['source /opt/intel/mkl/bin/mklvars.sh intel64'])
     stage0 += pip(packages=['Cython>0.29.21', 'pytest>1.15', 'Hypothesis>5.3.0'], pip='pip3')
     stage0 += shell(commands=[
-        git().clone_step(repository='https://github.com/numpy/numpy.git', branch=f'v{numpy_version}'),
-
+        f'git clone --branch v{numpy_version} https://github.com/numpy/numpy.git',
+        'apt remove -y python-numpy python-scipy',
+        'rm -rf /numpy'
     ])
-    stage0 += runscript(commands=['/bin/bash', 'source /opt/intel/mkl/bin/mklvars.sh intel64', '/usr/local/python/bin/python3 $*'])
+    stage0 += runscript(commands=['/usr/local/python/bin/python3 $*'])
 
     return stage0
 

@@ -1,5 +1,5 @@
 BootStrap: docker
-From: ubuntu:20.04
+From: ubuntu:18.04
 %post
     . /.singularity.d/env/10-docker*.sh
 
@@ -34,10 +34,24 @@ From: ubuntu:20.04
     cd /
     locale-gen en_AU.UTF-8
 
-# https://github.com/perfsonar/toolkit.git
 %post
     cd /
-    mkdir -p /var/tmp && cd /var/tmp && git clone --depth=1 --branch 4.4.0 https://github.com/perfsonar/toolkit.git toolkit && cd -
-    cd /var/tmp/toolkit
-    make install
-    rm -rf /var/tmp/toolkit
+    cd /etc/apt/sources.list.d/
+    wget http://downloads.perfsonar.net/debian/perfsonar-release.list
+    wget -qO - http://downloads.perfsonar.net/debian/perfsonar-official.gpg.key | apt-key add -
+    add-apt-repository -y universe
+    apt-get update
+
+%post
+    apt-get update -y
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        perfsonar-centralmanagement \
+        perfsonar-core \
+        perfsonar-testpoint \
+        perfsonar-toolkit \
+        perfsonar-tools
+    rm -rf /var/lib/apt/lists/*
+
+%post
+    cd /
+    /usr/lib/perfsonar/scripts/install-optional-packages.py

@@ -1,13 +1,9 @@
-from os import environ
+
 import os
 from hpccm import config, Stage
 from hpccm.building_blocks import gnu, openmpi, packages, nvhpc
-from hpccm.primitives import label, baseimage
+from hpccm.primitives import label, baseimage, comment, runscript, shell, environment
 from fire import Fire
-from hpccm.primitives.comment import comment
-from hpccm.primitives.environment import environment
-from hpccm.primitives.runscript import runscript
-from hpccm.primitives.shell import shell
 from hpccm_containers.utils import add_include_path, add_library_path, from_prefix
 
 
