@@ -24,7 +24,7 @@ def build(container_format='singularity', os_release='ubuntu', os_version='20.04
     stage0 += shell(commands=['rm /usr/bin/sh', 'ln -s /usr/bin/bash /usr/bin/sh', '/usr/bin/bash'])
     if gpu:
         stage0 += environment(variables=from_prefix('/usr/local/cuda'))
-    stage0 += packages(apt=['wget', 'git', 'software-properties-common', 'build-essential', 'locales'])
+    stage0 += packages(apt=['wget', 'git', 'software-properties-common', 'build-essential', 'locales', 'zlib1g-dev'])
     stage0 += shell(commands=['locale-gen en_AU.UTF-8'])
     if desktop:
         stage0 += comment('Installing vglrun and TurboVNC')

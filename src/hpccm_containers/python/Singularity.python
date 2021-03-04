@@ -17,6 +17,27 @@ From: ubuntu:20.04
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         build-essential \
         git \
+        locales \
+        software-properties-common \
+        wget
+    rm -rf /var/lib/apt/lists/*
+
+%post
+    cd /
+    locale-gen en_AU.UTF-8
+
+%environment
+    export LANGUAGE=en_AU.UTF-8
+    export LC_ALL=en_AU.UTF-8
+%post
+    export LANGUAGE=en_AU.UTF-8
+    export LC_ALL=en_AU.UTF-8
+
+%post
+    apt-get update -y
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        build-essential \
+        git \
         libbz2-dev \
         libffi-dev \
         libgdbm-compat-dev \
@@ -107,7 +128,7 @@ From: ubuntu:20.04
 
 %post
     cd /
-    . /opt/intel/mkl/bin/mklvars.sh intel64
+    source /opt/intel/mkl/bin/mklvars.sh intel64
 
 # pip
 %post
@@ -123,9 +144,9 @@ From: ubuntu:20.04
 
 %post
     cd /
-    mkdir -p /tmp && cd /tmp && git clone --depth=1 --branch v1.20.0rc2 https://github.com/numpy/numpy.git numpy && cd -
+    git clone --branch v1.20.0rc2 https://github.com/numpy/numpy.git
+    apt remove -y python-numpy python-scipy
+    rm -rf /numpy
 
 %runscript
-    /bin/bash
-    source /opt/intel/mkl/bin/mklvars.sh intel64
-    exec /usr/local/python/bin/python3 $*
+    exec /usr/local/python/bin/python3 $* "$@"

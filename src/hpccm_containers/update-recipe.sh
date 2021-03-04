@@ -1,9 +1,3 @@
 #!/bin/bash
-for i in *; do
-    if [ -d "$i" ] && [ -f "$i/$i.py" ]; then
-        cd $i
-        python $i.py > Singularity.$i
-        cd ..
-    fi
-done
 
+find . -name '*.py' -not \( -name "__init__.py" \) -mindepth 2 | parallel '/Users/ChengLuhan/anaconda3/envs/py37/bin/python {} > {//}/Singularity.{/.}'
