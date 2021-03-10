@@ -1,0 +1,48 @@
+
+import os
+from hpccm import config, Stage
+from hpccm.building_blocks import packages, openmpi, gnu
+from hpccm.primitives import label, baseimage, comment, runscript, shell, environment
+from fire import Fire
+
+
+import yaml
+
+# https://people.sc.fsu.edu/~jburkardt/c_src/hello_mpi/hello_mpi.c
+
+TESTCASES = [
+    'https://people.sc.fsu.edu/~jburkardt/c_src/hello_mpi/hello_mpi.c'
+]
+
+def build(container_format='singularity', os_release='ubuntu', os_version='20.04', openmpi_version='3.1.6', gnu_version='10'):
+    config.set_container_format(container_format)
+
+    image = f'{os_release}:{os_version}'
+
+    stage0 = Stage(name='stage0')
+    stage0 += baseimage(image=image, _bootstrap='docker')
+    stage0 += environment(variables={
+        'LC_ALL': 'en_AU.UTF-8',
+        'LANGUAGE': 'en_AU.UTF-8',
+    })
+    stage0 += label(metadata={'maintainer': 'Luhan Cheng', 'email': 'luhan.cheng@monash.edu'})
+    stage0 += shell(commands=['rm /usr/bin/sh', 'ln -s /usr/bin/bash /usr/bin/sh', '/usr/bin/bash'])
+
+    stage0 += packages(apt=['wget', 'git', 'software-properties-common', 'build-essential', 'locales', 'zlib1g-dev'])
+    stage0 += shell(commands=['locale-gen en_AU.UTF-8'])
+    stage0 += gnu(version=gnu_version)
+    stage0 += openmpi(cuda=False, infiniband=False, prefix='/usr/local/openmpi', version=openmpi_version, ucx=True, configure_opts=['--with-slurm'])
+
+    TESTCASE_DIR = '/usr/local/testcases'
+    stage0 += shell(commands=[
+        f'mkdir -p {TESTCASE_DIR} && cd {TESTCASE_DIR}',
+        *[f'wget {i}' for i in TESTCASES],
+        'for i in *;do echo $i;done'
+    ])
+
+
+    return stage0
+
+
+if __name__ == '__main__':
+    Fire(build)
