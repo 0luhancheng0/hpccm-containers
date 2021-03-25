@@ -1,0 +1,94 @@
+BootStrap: docker
+From: ubuntu:20.04
+%post
+    . /.singularity.d/env/10-docker*.sh
+
+%environment
+    export LANGUAGE=en_AU.UTF-8
+    export LC_ALL=en_AU.UTF-8
+%post
+    export LANGUAGE=en_AU.UTF-8
+    export LC_ALL=en_AU.UTF-8
+
+%labels
+    email luhan.cheng@monash.edu
+    maintainer Luhan Cheng
+
+%post
+    cd /
+    rm /usr/bin/sh
+    ln -s /usr/bin/bash /usr/bin/sh
+    /usr/bin/bash
+
+%post
+    apt-get update -y
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        build-essential \
+        cmake \
+        git \
+        locales \
+        software-properties-common \
+        wget \
+        zlib1g-dev
+    rm -rf /var/lib/apt/lists/*
+
+%post
+    cd /
+    locale-gen en_AU.UTF-8
+
+%post
+    cd /
+    mkdir /OUTPUTS /INPUTS
+
+# GNU compiler
+%post
+    apt-get update -y
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        g++-10 \
+        gcc-10 \
+        gfortran-10
+    rm -rf /var/lib/apt/lists/*
+%post
+    cd /
+    update-alternatives --install /usr/bin/g++ g++ $(which g++-10) 30
+    update-alternatives --install /usr/bin/gcc gcc $(which gcc-10) 30
+    update-alternatives --install /usr/bin/gcov gcov $(which gcov-10) 30
+    update-alternatives --install /usr/bin/gfortran gfortran $(which gfortran-10) 30
+
+%post
+    apt-get update -y
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        bc \
+        dc \
+        gzip \
+        libgomp1 \
+        perl \
+        python3.6 \
+        tcsh
+    rm -rf /var/lib/apt/lists/*
+
+# https://github.com/ANTsX/ANTs.git
+%post
+    cd /
+    mkdir -p /var/tmp && cd /var/tmp && git clone --depth=1 --branch v2.3.5 https://github.com/ANTsX/ANTs.git ANTs && cd -
+    mkdir -p /var/tmp/ANTs/build && cd /var/tmp/ANTs/build && CC=gcc CXX=g++ F77=gfortran F90=gfortran FC=gfortran cmake -DCMAKE_INSTALL_PREFIX=/usr/local/ants /var/tmp/ANTs
+    cmake --build /var/tmp/ANTs/build --target all -- -j$(nproc)
+    cmake --build /var/tmp/ANTs/build --target install -- -j$(nproc)
+    rm -rf /var/tmp/ANTs
+
+%environment
+    export ANTSPATH=/usr/local/ants/bin
+    export PATH=/usr/local/ants/bin:$PATH
+%post
+    export ANTSPATH=/usr/local/ants/bin
+    export PATH=/usr/local/ants/bin:$PATH
+
+%post
+    cd /
+    mkdir /usr/local/synb0
+    git clone https://github.com/MASILab/Synb0-DISCO.git /usr/local/synb0
+    cd /usr/local/synb0
+    git checkout 4b35200
+
+%runscript
+    exec /usr/local/synb0/extra/pipeline.sh "$@"
