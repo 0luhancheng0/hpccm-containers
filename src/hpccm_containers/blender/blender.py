@@ -62,7 +62,10 @@ def build(container_format='singularity', os_release='ubuntu', os_version='20.04
     blenderGIS_source = "https://github.com/domlysz/BlenderGIS/archive/refs/tags/v2.2.4-10/2020.zip"
     stage0 += shell(commands=[
         f"cd /var/tmp && wget {blenderGIS_source}",
-        f"{prefix}/blender -y -b --python-expr \'import bpy;bpy.ops.preferences.addon_install(filepath=\"/var/tmp/2020.zip\")\'"
+        f"{prefix}/blender -y -b -noaudio --python-expr \'import bpy;bpy.ops.preferences.addon_install(filepath=\"/var/tmp/2020.zip\");bpy.ops.preferences.addon_enable(module=\"BlenderGIS-2.2.4-10-2020\");bpy.ops.wm.save_userpref()\'"
+    ])
+    stage0 += runscript(commands=[
+        f'{prefix}/blender-softwaregl'
     ])
 
 

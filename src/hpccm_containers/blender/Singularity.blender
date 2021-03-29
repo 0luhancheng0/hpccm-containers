@@ -113,4 +113,7 @@ From: ubuntu:20.04
 %post
     cd /
     cd /var/tmp && wget https://github.com/domlysz/BlenderGIS/archive/refs/tags/v2.2.4-10/2020.zip
-    /usr/local/blender/blender -y -b --python-expr 'import bpy;bpy.ops.preferences.addon_install(filepath="/var/tmp/2020.zip")'
+    /usr/local/blender/blender -y -b -noaudio --python-expr 'import bpy;bpy.ops.preferences.addon_install(filepath="/var/tmp/2020.zip");bpy.ops.preferences.addon_enable(module="BlenderGIS-2.2.4-10-2020");bpy.ops.wm.save_userpref()'
+
+%runscript
+    exec /usr/local/blender/blender-softwaregl "$@"
