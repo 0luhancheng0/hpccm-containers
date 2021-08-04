@@ -36,7 +36,6 @@ def build(container_format='singularity', os_release='ubuntu', os_version='20.04
 
     stage0 += shell(commands=[
         'wget https://fsl.fmrib.ox.ac.uk/fsldownloads/fslinstaller.py',
-        'mkdir -p /usr/local/fsl',
         f'python2.7 fslinstaller.py -d /usr/local/fsl/ -V {fsl_version} -q',
         'rm fslinstaller.py'
     ])

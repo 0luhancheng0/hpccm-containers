@@ -1,10 +1,8 @@
-
-import os
 from hpccm import config, Stage
-from hpccm.building_blocks import gnu, openmpi, packages, nvhpc
-from hpccm.primitives import label, baseimage, comment, runscript, shell, environment
+from hpccm.building_blocks import packages
+from hpccm.primitives import label, baseimage, comment, shell, environment
 from fire import Fire
-from hpccm_containers.utils import add_include_path, add_library_path, from_prefix
+from hpccm_containers.utils import from_prefix
 
 
 def build(container_format='singularity', os_release='ubuntu', os_version='20.04', gpu=True, cuda_version='11.0', desktop=True):
@@ -39,11 +37,7 @@ def build(container_format='singularity', os_release='ubuntu', os_version='20.04
             'apt update',
             'apt -y upgrade'
         ])
-    if gpu:
-        stage0 += nvhpc(
-            eula=True,
-            cuda=True
-        )
+
     return stage0
 
 
