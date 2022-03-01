@@ -48,7 +48,7 @@ def build(
     stage0 += pip(packages=["jax", "jaxlib==0.1.69+cuda111 -f https://storage.googleapis.com/jax-releases/jax_releases.html"], upgrade=True, pip='pip3')
     stage0 += pip(packages=[f'-r {alphafold_path}/requirements.txt'], pip='pip3')
     stage0 += shell(commands=[f'cd /usr/local/anaconda/lib/python{python_version}/site-packages/ && patch -p0 < {alphafold_path}/docker/openmm.patch'])
-    stage0 += shell(commands=[f'cd {alphafold_path}', 'wget https://raw.githubusercontent.com/kalininalab/alphafold_non_docker/main/run_alphafold.sh && chmod a+x run_alphafold.sh'])
+    stage0 += shell(commands=[f'cd {alphafold_path}', 'wget https://raw.githubusercontent.com/0luhancheng0/hpccm-containers/main/src/hpccm_containers/alphafold/run_alphafold.sh && chmod a+x run_alphafold.sh'])
     stage0 += runscript(commands=['source /usr/local/anaconda/etc/profile.d/conda.sh', f"cd {alphafold_path}", f'{alphafold_path}/run_alphafold.sh $@'])
 
     return stage0

@@ -143,7 +143,7 @@ From: nvcr.io/nvidia/cuda:11.3.0-runtime-ubuntu20.04
 %post
     cd /
     cd /opt/alphafold
-    wget https://raw.githubusercontent.com/kalininalab/alphafold_non_docker/main/run_alphafold.sh && chmod a+x run_alphafold.sh
+    wget https://raw.githubusercontent.com/0luhancheng0/hpccm-containers/main/src/hpccm_containers/alphafold/run_alphafold.sh && chmod a+x run_alphafold.sh
 
 %runscript
     source /usr/local/anaconda/etc/profile.d/conda.sh
