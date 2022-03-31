@@ -1,8 +1,11 @@
-from hpccm.primitives import environment
-import hpccm
-from hpccm.primitives import baseimage, label
+import posixpath
 import re
-from hpccm.primitives import shell
+from distutils.version import StrictVersion
+
+import hpccm
+from hpccm.building_blocks.base import bb_base
+from hpccm.building_blocks.generic_build import generic_build
+from hpccm.primitives import baseimage, comment, environment, label, shell
 
 
 class shell_with_log(shell):
