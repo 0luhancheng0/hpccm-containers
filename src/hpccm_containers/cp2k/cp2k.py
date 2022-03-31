@@ -31,7 +31,7 @@ from hpccm_containers.utils import from_prefix
 # Note that these pre-built arch files are for the GNU compiler, users have to adapt them for other compilers.
 # It is possible to use the provided CP2K arch files as guidance.
 
-def build(container_format='singularity', os='ubuntu20.04', cuda_version='11.0', gpu_version='V100', mkl_version='2020.0-088', version='psmp'):
+def build(container_format='singularity', os='ubuntu20.04', cuda_version='11.0', gpu_version='V100', mkl_version='2020.0-088', version='psmp', tag='8.1.0'):
     image = f'nvcr.io/nvidia/cuda:{cuda_version}-devel-{os}'
     config.set_container_format(container_format)
     stage0 = Stage(name='stage0')
@@ -42,7 +42,7 @@ def build(container_format='singularity', os='ubuntu20.04', cuda_version='11.0',
     stage0 += packages(apt=['git', 'gfortran', 'mpich', 'libmpich-dev', 'software-properties-common', 'python-dev'])
     stage0 += python()
     stage0 += shell(commands=[
-        'git clone --depth 1 --branch v8.1.0 https://github.com/cp2k/cp2k.git /cp2k',
+        f'git clone --depth 1 --branch v{tag} https://github.com/cp2k/cp2k.git /cp2k',
         'cd /cp2k',
         'git submodule update --init --recursive'
     ])
@@ -65,7 +65,7 @@ def build(container_format='singularity', os='ubuntu20.04', cuda_version='11.0',
     ])
     stage0 += shell(commands=[
         'cd /opt/cp2k-toolchain',
-        f'./install_cp2k_toolchain.sh --mpi-mode=mpich --math-mode=mkl --with-reflapack=no --with-scalapack=no --with-elpa=no --gpu-ver={gpu_version}',
+        f'./install_cp2k_toolchain.sh --mpi-mode=openmpi --math-mode=mkl --with-reflapack=no --with-scalapack=no --with-elpa=no --gpu-ver={gpu_version}',
         'rm -rf ./build'
     ])
     stage0 += shell(commands=[

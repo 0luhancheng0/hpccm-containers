@@ -1,13 +1,13 @@
 from os import environ
 from hpccm import config, Stage
 from hpccm.building_blocks import packages, conda, pip
-from hpccm.primitives import label, baseimage, comment, shell, environment, runscript, workdir
+from hpccm.primitives import label, baseimage, shell, environment, runscript
 from fire import Fire
 from hpccm_containers.utils import from_prefix
 
 
 def build(
-    container_format='singularity', flavour="runtime", os_release='ubuntu', os_version='20.04',
+    container_format='singularity', flavour="devel", os_release='ubuntu', os_version='20.04',
     cuda_version='11.3.0', python_version='3.8', anaconda_version='4.9.2', alphafold_path="/opt/alphafold", version='2.1.2'):
 
     config.set_container_format(container_format)
@@ -27,7 +27,7 @@ def build(
     ])
 
     stage0 += environment(variables=from_prefix('/usr/local/cuda'))
-    stage0 += packages(apt=['wget', 'git', 'software-properties-common', 'build-essential', 'locales', 'zlib1g-dev'])
+    stage0 += packages(apt=['wget', 'git', 'software-properties-common', 'build-essential', 'locales', 'zlib1g-dev', 'vim'])
     stage0 += shell(commands=['locale-gen en_AU.UTF-8'])
 
     stage0 += conda(
