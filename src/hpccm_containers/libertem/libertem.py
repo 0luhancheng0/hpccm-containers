@@ -1,11 +1,11 @@
 from hpccm import config, Stage
-from hpccm.building_blocks import packages
-from hpccm.primitives import label, baseimage, comment, shell, environment
+from hpccm.building_blocks import packages, conda
+from hpccm.primitives import label, baseimage, comment, shell, environment, runscript
 from fire import Fire
 from hpccm_containers.utils import from_prefix
 
 
-def build(container_format='singularity', os_release='ubuntu', os_version='20.04', cuda_version='11.0', version='2.7'):
+def build(container_format='singularity', os_release='ubuntu', os_version='20.04', cuda_version='11.0', python_version='3.9', version='0.9.0'):
     config.set_container_format(container_format)
     image = f'nvcr.io/nvidia/cuda:{cuda_version}-devel-{os_release}{os_version}'
 
@@ -21,9 +21,8 @@ def build(container_format='singularity', os_release='ubuntu', os_version='20.04
         'rm -f /usr/bin/sh && ln -s /usr/bin/bash /usr/bin/sh',
         '/bin/bash',
     ])
-
     stage0 += environment(variables=from_prefix('/usr/local/cuda'))
-    stage0 += packages(apt=['wget', 'git', 'software-properties-common', 'build-essential', 'locales', 'zlib1g-dev'])
+    stage0 += packages(apt=['wget', 'git', 'software-properties-common', 'build-essential', 'locales', 'zlib1g-dev', 'libfftw3-dev'])
     stage0 += shell(commands=['locale-gen en_AU.UTF-8'])
     stage0 += comment('Installing vglrun and TurboVNC')
     stage0 += packages(apt=['ubuntu-desktop', 'vim', 'mesa-utils', 'python3-pip', 'python3-pyqt5', 'pyqt5-dev', 'python3-tk'])
@@ -33,19 +32,17 @@ def build(container_format='singularity', os_release='ubuntu', os_version='20.04
         'apt update',
         'apt -y upgrade'
     ])
-    stage0 += packages(apt=["qt5-qmake", 'qtmultimedia5-dev', 'libqt5multimediawidgets5', 'libqt5multimedia5-plugins',
-                            'libqt5multimedia5', 'libglew-dev', 'glew-utils', 'libqglviewer-dev-qt5', 'libnetcdf-dev', 'libnetcdf-cxx-legacy-dev', 'freeglut3-dev', 'libassimp-dev'])
+    stage0 += conda(
+        eula=True,
+        packages=[f'python={python_version}']
+    )
+    stage0 += environment(variables=from_prefix('/usr/local/anaconda'))
     stage0 += shell(commands=[
-        'mkdir -p /opt/',
-        "cd /opt",
-        f'git clone --branch v-{version}linux https://github.com/nci/drishti.git',
-        'cd drishti/drishti',
-        'qmake -qt=5',
-        'export LDFLAGS="$LDFLAGS -L/usr/lib/x86_64-linux-gnu/ -lassimp"',
-        'ln -s /usr/lib/x86_64-linux-gnu/libQGLViewer-qt5.so /usr/lib/x86_64-linux-gnu/libQGLViewer.so',
-        'make'
+        # 'source /usr/local/anaconda/etc/profile.d/conda.sh',
+        f'python -m pip install libertem[torch]=={version} cupy'
     ])
 
+    # stage0 += runscript(commands=['source /usr/local/anaconda/etc/profile.d/conda.sh', '/usr/local/anaconda/bin/python3 $*'])
 
     return stage0
 

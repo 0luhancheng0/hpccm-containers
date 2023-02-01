@@ -1,13 +1,14 @@
 
 import os
 from hpccm import config, Stage
-from hpccm.building_blocks import gnu, openmpi, packages, nvhpc
+from hpccm.building_blocks import gnu, openmpi, packages, nvhpc, hdf5, openmpi, fftw, cmake
 from hpccm.primitives import label, baseimage, comment, runscript, shell, environment
 from fire import Fire
 from hpccm_containers.utils import add_include_path, add_library_path, from_prefix
 
 
-def build(container_format='singularity', os_release='ubuntu', os_version='20.04', cuda_version='11.0.3'):
+def build(container_format='singularity', os_release='ubuntu', os_version='20.04', cuda_version='11.0.3', plugins=['scipion-em-motioncorr', 'scipion-pyworkflow', 'scipion-em', 'scipion-app'], xmipp_version='v3.22.01-Eris'):
+    # config.set_cpu_architecture('x86_64')
     config.set_container_format(container_format)
 
     # image = f'{os_release}:{os_version}'
@@ -40,19 +41,29 @@ def build(container_format='singularity', os_release='ubuntu', os_version='20.04
         'apt update',
         'apt -y upgrade'
     ])
+    compiler = gnu(version='8')
+    stage0 += compiler
+    stage0 += hdf5()
+    stage0 += openmpi(cuda=True, toolchain=compiler.toolchain, infiniband=False)
+    stage0 += fftw(mpi=True, toolchain=compiler.toolchain)
 
-    stage0 += packages(apt=['make', 'libopenmpi-dev', 'python3-tk', 'libfftw3-dev', 'libhdf5-dev', 'libtiff-dev', 'libjpeg-dev', 'libsqlite3-dev', 'openjdk-8-jdk'])
-    stage0 += environment(variables={
-        'LD_LIBRARY_PATH': "$LD_LIBRARY_PATH:/usr/lib/x86_64-linux-gnu/hdf5/serial",
-
-    })
-    prefix='/usr/local/scipion'
+    stage0 += packages(apt=['make', 'python3-tk', 'libtiff5-dev', 'libjpeg-dev', 'libsqlite3-dev', 'openjdk-8-jdk', 'default-jdk', 'cmake', 'python3-opencv'])
 
     stage0 += shell(commands=[
+        'python3 -m pip install scons numpy',
+        f'git clone -b {xmipp_version} https://github.com/I2PC/xmipp.git xmipp-bundle',
+        'cd xmipp-bundle',
+        './xmipp config noAsk',
+        './xmipp',
+    ])
+    prefix='/usr/local/scipion'
+    stage0 += shell(commands=[
         'python3 -m pip install --user scipion-installer',
-        f'python3 -m scipioninstaller {prefix} -j 4'
+        f'python3 -m scipioninstaller {prefix} -j 4',
+        'scipion3 installp -p ' + ' -p '.join(plugins)
     ])
     stage0 += environment(variables=from_prefix(prefix))
+
     return stage0
 
 

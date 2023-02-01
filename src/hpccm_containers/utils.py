@@ -8,6 +8,8 @@ from hpccm.building_blocks.generic_build import generic_build
 from hpccm.primitives import baseimage, comment, environment, label, shell
 
 
+
+
 class shell_with_log(shell):
     def __init__(self, **kwargs):
         rep = {" ": "_", "/": "_", "|": "_", '\\': "_", "&": "_"}
